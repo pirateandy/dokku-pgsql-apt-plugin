@@ -1,0 +1,14 @@
+#!/bin/bash
+
+APP="$1"; IMAGE="dokku/$APP"
+echo "-----> Installing psycopg2 ..."
+COMMAND=$(cat <<EOF
+apt-get install python-psycopg2
+EOF
+)
+
+id=$(docker run -d $IMAGE /bin/bash -c "$COMMAND")
+docker attach $id
+test $(docker wait $id) -eq 0
+docker commit $id $IMAGE > /dev/null
+echo "-----> Installed psycopg2"
